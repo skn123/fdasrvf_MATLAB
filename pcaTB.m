@@ -10,8 +10,8 @@ function out = pcaTB(f, time, a, p, var_exp, option)
 % Inputs:
 % f (M,N): matrix defining N functions of M samples
 % time : time vector of length M
-% a: confidence level
-% p: coverage level
+% a: confidence level (default = 0.05)
+% p: coverage level (default = 0.99)
 % var_exp: compute number of pcs based on value percent variance explained (default = 0.99)
 %
 % default options
@@ -34,22 +34,22 @@ function out = pcaTB(f, time, a, p, var_exp, option)
 arguments
     f
     time
-    a
-    p
-    var_exp
+    a = 0.05;
+    p = 0.99;
+    var_exp = 0.99;
     option.parallel = 0;
     option.closepool = 0;
     option.smooth = 0;
     option.sparam = 25;
-    option.showplot = 1;
     option.method = 'DP1';
-    option.w = 0.0;
+    option.spl = true;
     option.MaxItr = 20;
 end
 
 %% Align Data
 out_warp = fdawarp(f,time);
-out_warp = out_warp.time_warping_median(0,option);
+out_warp = out_warp.time_warping_median(0,'parallel',option.parallel,'closepool',option.closepool,'smooth',option.smooth, ...
+    'sparam', option.sparam, 'method', option.method, 'spl', option.spl, 'MaxItr', option.MaxItr);
 
 %% Calculate pca
 
