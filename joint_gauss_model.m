@@ -1,10 +1,10 @@
-function out_warp = joint_gauss_model(out_warp, n, no)
+function out_warp = joint_gauss_model(out_warp, n, var_exp)
 % JOINT_GAUSS_MODEL Gaussian gnerative model from jointFPCA
 % -------------------------------------------------------------------------
 % This function models the functional data using a Gaussian model extracted
 % from the principal components of the srvfs and warping functinos
 %
-% Usage: samples = joint_gauss_model(out_warp, n, no)
+% Usage: samples = joint_gauss_model(out_warp, n, var_exp)
 %
 % Inputs:
 % fn: matrix (\eqn{N} x \eqn{M}) of \eqn{M} aligned functions with \eqn{N} samples
@@ -12,6 +12,7 @@ function out_warp = joint_gauss_model(out_warp, n, no)
 % qn: matrix (\eqn{N} x \eqn{M}) of \eqn{M} aligned srvfs
 % gam: warping functions
 % n: number of random samples (n = 1)
+% var_exp: compute number of pcs based on value percent variance explained (default = 0.99)
 %
 % Output:
 % Structure containing
@@ -28,7 +29,7 @@ qn = out_warp.qn;
 
 %% Perform PCA
 jfpca = fdajpca(out_warp);
-jfpca = jfpca.calc_fpca(no);
+jfpca = jfpca.calc_fpca(var_exp);
 s = jfpca.latent;
 U = jfpca.U;
 C = jfpca.C;

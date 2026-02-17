@@ -1,18 +1,18 @@
-function out = pcaTB(f, time, a, p, no, option)
+function out = pcaTB(f, time, a, p, var_exp, option)
 % PCATB Computes functional tolerance bounds
 % -------------------------------------------------------------------------
 % Computes tolerance bounds for function data containing
 % phase and amplitude variation using elasatic fPCA
 %
-% Usage: out = pcaTB(f, time, a, p, no)
-%        out = pcaTB(f, time, a, p, no, option)
+% Usage: out = pcaTB(f, time, a, p, var_exp)
+%        out = pcaTB(f, time, a, p, var_exp, option)
 %
 % Inputs:
 % f (M,N): matrix defining N functions of M samples
 % time : time vector of length M
 % a: confidence level
 % p: coverage level
-% no: number of principal components
+% var_exp: compute number of pcs based on value percent variance explained (default = 0.99)
 %
 % default options
 % option.parallel = 0; % turns offs MATLAB parallel processing (need
@@ -36,7 +36,7 @@ arguments
     time
     a
     p
-    no
+    var_exp
     option.parallel = 0;
     option.closepool = 0;
     option.smooth = 0;
@@ -52,7 +52,9 @@ out_warp = fdawarp(f,time);
 out_warp = out_warp.time_warping_median(0,option);
 
 %% Calculate pca
-out_pca = jointFPCA(out_warp, no, false);
+
+out_pca = fdajpca(out_warp);
+out_pca = out_pca.calc_fpca(var_exp);
 
 %% Calculate TB
 tol = mvtol_region(out_pca.coef, a, p, 100000);

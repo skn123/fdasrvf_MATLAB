@@ -1,11 +1,11 @@
-function [amp, ph] = bootTB(f, time, a, p, B, no, option)
+function [amp, ph] = bootTB(f, time, a, p, B, var_exp, option)
 % BOOTB Computes functional tolerance bounds
 % -------------------------------------------------------------------------
 % function computes tolerance bounds for function data containing
 % phase and amplitude variation using bootstrap sampling
 %
-% Usage: [amp, ph] = bootTB(f, time, a, p, B, no)
-%        [amp, ph] = bootTB(f, time, a, p, B, no, option)
+% Usage: [amp, ph] = bootTB(f, time, a, p, B, var_exp)
+%        [amp, ph] = bootTB(f, time, a, p, B, var_exp, option)
 %
 % Inputs:
 % f (M,N): matrix defining N functions of M samples
@@ -13,7 +13,7 @@ function [amp, ph] = bootTB(f, time, a, p, B, no, option)
 % a: confidence level
 % p: coverage level
 % B: number of boostrap samples
-% no: number of principal components
+% var_exp: compute number of pcs based on value percent variance explained (default = 0.99)
 %
 % default options
 % option.parallel = 1; % turns offs MATLAB parallel processing (need
@@ -57,7 +57,7 @@ arguments
     a
     p
     B
-    no
+    var_exp
     option.parallel = 1;
     option.closepool = 0;
     option.smooth = 0;
@@ -104,7 +104,7 @@ bootupr_amp = zeros(M,B);
 bootlwr_ph = zeros(M,B);
 bootupr_ph = zeros(M,B);
 parfor (k = 1:B)
-    samples = joint_gauss_model(out_med, 100, no);
+    samples = joint_gauss_model(out_med, 100, var_exp);
     obja = ampbox(samples);
     amp_b = obja.construct_boxplot(1-p,.3);
     objp = phbox(samples);

@@ -93,8 +93,8 @@ classdef fdajpca
             % This function calculates joint functional principal component analysis
             % on aligned data
             %
-            % Usage: obj.calc_fpca(no)
-            %        obj.calc_fpca(no,id)
+            % Usage: obj.calc_fpca(var_exp)
+            %        obj.calc_fpca(var_exp,id)
             %
             % Inputs:
             % warp_data: struct from time_warping of aligned data
