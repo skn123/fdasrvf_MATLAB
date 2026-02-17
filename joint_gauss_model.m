@@ -31,9 +31,15 @@ qn = out_warp.qn;
 jfpca = fdajpca(out_warp);
 jfpca = jfpca.calc_fpca(var_exp);
 s = jfpca.latent;
+Uz = jfpca.Uz;
+Uv = jfpca.U1;
 U = jfpca.U;
 C = jfpca.C;
 mu_psi = jfpca.mu_psi;
+
+no_q = size(U,2);
+Psi_q = U * Uz(1:no_q,:);
+Psi_h = Uv * Uz((no_q+1):end, :);
 
 mq_new = mean(qn,2);
 id = jfpca.id;
@@ -43,23 +49,32 @@ mqn = [mq_new; mean(m_new)];
 %% Generate Random samples
 vals = mvnrnd(zeros(1,length(s)),diag(s), n);
 
-tmp = U * vals.';
-qhat = repmat(mqn, 1, n) + tmp(1:(M+1),:);
-tmp = U * (vals.'/C);
-vechat = tmp((M+2):end,:);
-psihat = zeros(M, n);
+tmp = Psi_q * vals.';
+qhat = repmat(mqn, 1, n) + tmp;
+vechat = Psi_h * (vals.'/C);
 gamhat = zeros(M, n);
 for ii = 1:n
-    psihat(:,ii) = exp_map(mu_psi,vechat(:,ii));
-    gam_tmp = cumtrapz(linspace(0,1,M), psihat(:,ii).*psihat(:,ii));
-    gamhat(:,ii) = (gam_tmp - min(gam_tmp))/(max(gam_tmp)-min(gam_tmp));
+    if jfpca.log_der
+        gam_tmp = h_to_gam(vechat(:, ii));
+        gamhat(:,ii) = (gam_tmp - min(gam_tmp))/(max(gam_tmp)-min(gam_tmp));
+    else
+        psihat = exp_map(jfpca.mu_psi,vechat(:, ii));
+        gam_tmp = cumtrapz(linspace(0,1,M), psihat.*psihat);
+        gamhat(:,ii) = (gam_tmp - min(gam_tmp))/(max(gam_tmp)-min(gam_tmp));
+    end
 end
+
 
 ft = zeros(M,n);
 fhat = zeros(M,n);
 for ii = 1:n
-    fhat(:,ii) = cumtrapzmid(time, qhat(1:M,ii).*abs(qhat(1:M,ii)), sign(qhat(M+1,ii)).*(qhat(M+1,ii)^2), id);
-    ft(:,ii) = warp_f_gamma(fhat(:,ii), gamhat(:,ii), linspace(0,1,M));
+    if jfpca.srvf
+        fhat(:,ii) = cumtrapzmid(time, qhat(1:M,ii).*abs(qhat(1:M,ii)), sign(qhat(M+1,ii)).*(qhat(M+1,ii)^2), id);
+        ft(:,ii) = warp_f_gamma(fhat(:,ii), gamhat(:,ii), linspace(0,1,M));
+    else
+        fhat(:,ii) = qhat(:,ii);
+        ft(:,ii) = warp_f_gamma(fhat(:,ii), gamhat(:,ii), linspace(0,1,M));
+    end
 end
 
 out_warp.fs = fhat;

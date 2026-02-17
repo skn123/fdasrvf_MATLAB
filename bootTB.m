@@ -10,9 +10,9 @@ function [amp, ph] = bootTB(f, time, a, p, B, var_exp, option)
 % Inputs:
 % f (M,N): matrix defining N functions of M samples
 % time : time vector of length M
-% a: confidence level
-% p: coverage level
-% B: number of boostrap samples
+% a: confidence level (default = 0.05)
+% p: coverage level (default = 0.99)
+% B: number of boostrap samples (default = 1000)
 % var_exp: compute number of pcs based on value percent variance explained (default = 0.99)
 %
 % default options
@@ -54,17 +54,16 @@ function [amp, ph] = bootTB(f, time, a, p, B, var_exp, option)
 arguments
     f
     time
-    a
-    p
-    B
-    var_exp
-    option.parallel = 1;
+    a = 0.05;
+    p = 0.99;
+    B = 500;
+    var_exp = 0.99;
+    option.parallel = 0;
     option.closepool = 0;
     option.smooth = 0;
     option.sparam = 25;
-    option.showplot = 1;
     option.method = 'DP1';
-    option.w = 0.0;
+    option.spl = true;
     option.MaxItr = 20;
 end
 
@@ -72,7 +71,8 @@ end
 
 %% Align Data
 out_med = fdawarp(f,time);
-out_med = out_med.time_warping_median(0,option);
+out_med = out_med.time_warping_median(0,'parallel',option.parallel,'closepool',option.closepool,'smooth',option.smooth, ...
+    'sparam', option.sparam, 'method', option.method, 'spl', option.spl, 'MaxItr', option.MaxItr);
 
 %% Calculate CI
 if isempty(gcp('nocreate'))
