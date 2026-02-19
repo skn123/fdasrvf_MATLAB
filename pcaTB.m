@@ -1,11 +1,11 @@
-function out = pcaTB(f, time, a, p, var_exp, option)
+function out = pcaTB(f, time, a, p, var_exp, method, option)
 % PCATB Computes functional tolerance bounds
 % -------------------------------------------------------------------------
 % Computes tolerance bounds for function data containing
 % phase and amplitude variation using elasatic fPCA
 %
 % Usage: out = pcaTB(f, time, a, p, var_exp)
-%        out = pcaTB(f, time, a, p, var_exp, option)
+%        out = pcaTB(f, time, a, p, var_exp, method)
 %
 % Inputs:
 % f (M,N): matrix defining N functions of M samples
@@ -13,6 +13,8 @@ function out = pcaTB(f, time, a, p, var_exp, option)
 % a: confidence level (default = 0.05)
 % p: coverage level (default = 0.99)
 % var_exp: compute number of pcs based on value percent variance explained (default = 0.99)
+% method: string specifing pca method (options = "combined",
+%   "vert", or "horiz", default = "combined")
 %
 % default options
 % option.parallel = 0; % turns offs MATLAB parallel processing (need
@@ -37,6 +39,7 @@ arguments
     a = 0.05;
     p = 0.99;
     var_exp = 0.99;
+    method = "combined";
     option.parallel = 0;
     option.closepool = 0;
     option.smooth = 0;
@@ -53,7 +56,16 @@ out_warp = out_warp.time_warping_median(0,'parallel',option.parallel,'closepool'
 
 %% Calculate pca
 
-out_pca = fdajpca(out_warp);
+switch method
+    case 'combined'
+        out_pca = fdajpca(obj.warp_data);
+    case 'vert'
+        out_pca = fdavpca(obj.warp_data);
+    case 'horiz'
+        out_pca = fdahpca(obj.warp_data);
+    otherwise
+        error('Invalid Method')
+end
 out_pca = out_pca.calc_fpca(var_exp);
 
 %% Calculate TB

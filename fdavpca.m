@@ -56,7 +56,7 @@ classdef fdavpca
             obj.warp_data = fdawarp;
         end
         
-        function obj = calc_fpca(obj,no,var_exp,id,stds)
+        function obj = calc_fpca(obj,var_exp,no,id,stds)
             % CALC_FPCA Vertical Functional Principal Component Analysis
             % -------------------------------------------------------------------------
             % This function calculates vertical functional principal component analysis
@@ -79,8 +79,8 @@ classdef fdavpca
 
             arguments
                 obj
-                no = 3;
                 var_exp = NaN;
+                no = 3;
                 id = round(length(obj.warp_data.time)/2);
                 stds = -2:2;
             end

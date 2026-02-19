@@ -65,7 +65,7 @@ classdef fdahpca
             obj.log_der = log_der;
         end
         
-        function obj = calc_fpca(obj, no, var_exp, stds)
+        function obj = calc_fpca(obj, var_exp, no, stds)
             % calc_fpca Horizontal Functional Principal Component Analysis
             % -------------------------------------------------------------------------
             % This function calculates vertical functional principal component analysis
@@ -74,9 +74,9 @@ classdef fdahpca
             % Usage: obj.calc_fpca(no)
             %
             % Inputs:
-            % no: number of principal components to extract
             % var_exp: compute no based on value percent variance explained
             %          (example: 0.95)
+            % no: number of principal components to extract
             % stds: number of standard deviations along geodesic to compute
             %       (default = -2:2)
             %
@@ -85,8 +85,8 @@ classdef fdahpca
             
             arguments
                 obj
-                no = 3;
                 var_exp = NaN;
+                no = 3;
                 stds = -2:2;
             end
             gam = obj.warp_data.gam;

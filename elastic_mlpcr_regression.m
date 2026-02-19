@@ -71,19 +71,19 @@ classdef elastic_mlpcr_regression
             end
         end
         
-        function obj = calc_model(obj, method, no, option)
+        function obj = calc_model(obj, method, var_exp, option)
             % CALC_MODEL Calculate regression model parameters
             % -------------------------------------------------------------------------
             % This function identifies a regression model with phase-variablity using
             % elastic methods
             %
-            % Usage:  obj.calc_model(method, no, option)
-            %         obj.calc_model(method, no)
+            % Usage:  obj.calc_model(method, var_exp, option)
+            %         obj.calc_model(method, var_exp)
             %
             % input:
             % method: string specifing pca method (options = "combined",
             %   "vert", or "horiz", default = "combined")
-            % no: number of principal components
+            % var_exp: compute number of pcs based on value percent variance explained (default = 0.99)
             % option: option for alignment
             %
             % default options
@@ -102,7 +102,7 @@ classdef elastic_mlpcr_regression
             arguments
                 obj
                 method
-                no
+                var_exp = 0.99;
                 option.parallel = 1;
                 option.closepool = 0;
                 option.smooth = 0;
@@ -135,7 +135,8 @@ classdef elastic_mlpcr_regression
                 otherwise
                     error('Invalid Method')
             end
-            out_pca = out_pca.calc_fpca(no);
+            out_pca = out_pca.calc_fpca(var_exp);
+            no = size(out_pca.coef,2);
             
             % LS using PCA basis
             Phi = ones(N1,no+1);
