@@ -1,4 +1,7 @@
 # 3.6.X
+
+# 3.6.11
+* bug fixes to TB code from refactor
 * update scale in curve code
 * bugfixes
 
