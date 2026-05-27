@@ -59,8 +59,8 @@ void permuteCols(double *x, int p, int q,int n)
 
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
-    int n,sizL[2],sizD[2],i,j,q,s,
-    *P;
+    int n,i,j,q,s,*P;
+    mwSize sizL[2],sizD[2]; 
     
     double mu,gamma,xi,delta,beta,maxVal,theta,
     *c,    *H, *L, *D, *A;
