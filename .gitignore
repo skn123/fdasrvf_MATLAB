@@ -11,3 +11,5 @@ fdasrvf_MATLAB.code-workspace
 mex/*
 
 release/
+
+deploymentLog.html
